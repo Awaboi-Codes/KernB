@@ -49,8 +49,12 @@ extern "C" void kernel_main(unsigned int magic, unsigned int mb_info_addr) {
         while (true) asm volatile("hlt");
     }
 
-    readBlock(3);
-    fbsys::draw_string(5, 5, reinterpret_cast<const char*>(sector), COLOR_WHITE);
+    int y = 5;
+    readBlock(0);
+    fbsys::draw_string(5, y, "KernB Test", COLOR_WHITE); y += 10;
+    fbsys::draw_string(5, y, "Memory Initalized", COLOR_WHITE); y += 10;
+    fbsys::draw_string(5, y, "Filesystem Reader Initialized", COLOR_WHITE); y += 10;
+    fbsys::draw_string(5, y, reinterpret_cast<const char*>(sector), COLOR_WHITE);  y += 10;//reinterpret_cast<const char*>(sector)
 
     while (true) asm volatile("hlt");
 }
