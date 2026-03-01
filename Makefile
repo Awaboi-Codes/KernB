@@ -1,51 +1,48 @@
-# Makefile for KernB
-ASM    = nasm
-CXX    = g++
-LD     = ld
+CC      = gcc
+LD      = ld
+NASM    = nasm
+CFLAGS  = -m32 -ffreestanding -fno-builtin -nostdlib
+LDFLAGS = -m elf_i386 -T linker.ld
 
-CXXFLAGS = -m32 -ffreestanding -fno-exceptions -fno-rtti \
-           -fno-stack-protector -nostdlib -O2 -Wall -Wextra \
-           -Ikernel -Ifs \
-           -mno-sse -mno-sse2 -mno-mmx -mno-avx \
-           -mno-80387 -msoft-float
+# Automatically find all .c and .asm files in any subdirectory
+C_SRCS   := $(shell find . -name "*.c" -not -path "./isodir/*")
+ASM_SRCS := $(shell find . -name "*.asm" -not -path "./isodir/*")
 
-LDFLAGS  = -m elf_i386 -T linker.ld --oformat=elf32-i386
+# Convert source paths to .o files
+C_OBJS   := $(C_SRCS:.c=.o)
+ASM_OBJS := $(ASM_SRCS:.asm=.o)
+OBJS     := $(C_OBJS) $(ASM_OBJS)
 
-KERNEL  = kernel.bin
-ISO     = kernb.iso
+all: kernel.iso
 
-# Auto-collect all .cpp files from kernel/ and fs/
-CPP_SRCS = $(wildcard kernel/*.cpp) $(wildcard fs/*.cpp)
-CPP_OBJS = $(CPP_SRCS:.cpp=.o)
+# Compile any .c file
+%.o: %.c
+	$(CC) $(CFLAGS) -c $< -o $@
 
-.PHONY: all clean iso run-iso
+# Assemble any .asm file
+%.o: %.asm
+	$(NASM) -f elf32 $< -o $@
 
-all: $(KERNEL)
+# Link
+kernel.elf: $(OBJS)
+	$(LD) $(LDFLAGS) $(OBJS) -o $@
 
-kernel/%.o: kernel/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# ISO
+kernel.iso: kernel.elf
+	mkdir -p isodir/boot/grub
+	cp kernel.elf isodir/boot/kernel.elf
+	cp boot/grub/grub.cfg isodir/boot/grub/grub.cfg
+	grub-mkrescue -o kernel.iso isodir
+	@echo "Built kernel.iso"
 
-fs/%.o: fs/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+# Run
+run: kernel.iso
+	qemu-system-i386 -cdrom kernel.iso
 
-boot.o: kernel/boot.asm
-	$(ASM) -f elf32 kernel/boot.asm -o boot.o
-
-$(KERNEL): boot.o $(CPP_OBJS)
-	$(LD) $(LDFLAGS) boot.o $(CPP_OBJS) -o $(KERNEL)
-
-disk.img:
-	dd if=/dev/zero of=disk.img bs=1M count=10
-
-iso: $(KERNEL)
-	mkdir -p iso/boot/grub
-	cp $(KERNEL) iso/boot/
-	cp grub.cfg iso/boot/grub/
-	grub-mkrescue -o $(ISO) iso
-
-run-iso: iso disk.img
-	qemu-system-i386 -cdrom $(ISO) -hda disk.img -vga std -m 64M -d int,cpu_reset -no-reboot
-
+# Cleanup
 clean:
-	rm -f boot.o kernel/*.o fs/*.o $(KERNEL) $(ISO)
-	rm -rf iso
+	find . -name "*.o" -not -path "./isodir/*" -delete
+	rm -f kernel.elf kernel.iso
+	rm -rf isodir
+
+.PHONY: all run clean
