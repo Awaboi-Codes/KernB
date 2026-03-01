@@ -49,7 +49,7 @@ extern "C" void kernel_main(unsigned int magic, unsigned int mb_info_addr) {
         while (true) asm volatile("hlt");
     }
 
-    readBlock(0);
+    readBlock(3);
     fbsys::draw_string(5, 5, reinterpret_cast<const char*>(sector), COLOR_WHITE);
 
     while (true) asm volatile("hlt");

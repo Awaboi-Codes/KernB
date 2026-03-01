@@ -40,12 +40,7 @@ disk.img:
 iso: $(KERNEL)
 	mkdir -p iso/boot/grub
 	cp $(KERNEL) iso/boot/
-	echo 'set timeout=0'                    > iso/boot/grub/grub.cfg
-	echo 'set default=0'                   >> iso/boot/grub/grub.cfg
-	echo 'menuentry "KernB" {'             >> iso/boot/grub/grub.cfg
-	echo '    multiboot2 /boot/kernel.bin' >> iso/boot/grub/grub.cfg
-	echo '    boot'                        >> iso/boot/grub/grub.cfg
-	echo '}'                               >> iso/boot/grub/grub.cfg
+	cp grub.cfg iso/boot/grub/
 	grub-mkrescue -o $(ISO) iso
 
 run-iso: iso disk.img
