@@ -1,19 +1,10 @@
-#include "../kernel/vga/vga.h"
-#include "../kernel/keyboard/keyboard.h"
-
-void handle_command(char* command) {
-    if (streq(command, "hello")) {
-        print(0, 3, "Hello, world!");
-    } else {
-        print(0, 3, "Unknown command");
-    }
-}
+#include "../modules/modules.h"
 
 void kernel_main() {
     char command[256];
     int cmd_len = 0;
 
-    print(0, 0, "KernB");
+    print(1, 1, "[KernB Shell] > ");
 
     while (1) {
         unsigned char scancode = read_key();
@@ -35,7 +26,7 @@ void kernel_main() {
             handle_command(command);
             // clear input line
             for (int i = 0; i < width; i++)
-                putchar(i, 1, ' ');
+                putchar(i, 13, ' ');
             cmd_len = 0;
             continue;
         }
@@ -43,7 +34,7 @@ void kernel_main() {
         char c = key_to_char(scancode);
         if (c && cmd_len < 255) {
             command[cmd_len] = c;
-            putchar(cmd_len, 1, c);
+            putchar(cmd_len, 13, c);
             cmd_len++;
         }
     }
