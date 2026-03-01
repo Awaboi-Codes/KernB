@@ -12,11 +12,12 @@ unsigned char *commands[] = {
 void handle_command(char* command) {
     int i = 0;
     while (commands[i]) {
-        if (streq(command, (char*)commands[i])) {
+        char* currentCommand = (char*)commands[i];
+        if (streq(command, currentCommand)) {
             // handle each command
-            if (streq(command, "echo")) {
+            if (streq(currentCommand, "echo")) {
                 print(0, currentLine, "this is text this is text this is text this is text");
-            } else if (streq(command, "exit")) {
+            } else if (streq(currentCommand, "exit")) {
                 print(0, currentLine, "this is exit");
             }
             currentLine++;

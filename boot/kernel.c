@@ -8,19 +8,21 @@ void kernel_main() {
         print(0, currentLine, "[KernB Shell] > ");
         unsigned char scancode = read_key();
 
-        if (scancode == 0x2A || scancode == 0x36) { shift = 1; continue; }
-        if (scancode == 0xAA || scancode == 0xB6) { shift = 0; continue; }
-        if (scancode & 0x80) continue;
-
-        if (scancode == 0x0E) {         // backspace
+        if (scancode == 0x2A || scancode == 0x36) {
+            shift = 1; 
+            continue;
+        } else if (scancode == 0xAA || scancode == 0xB6) {
+            shift = 0;
+            continue;
+        } else if (scancode & 0x80) {
+            continue;
+        } else if (scancode == 0x0E) {         // backspace
             if (cmd_len > 0) {
                 cmd_len--;
                 putchar(cmd_len+16, currentLine, ' ');
             }
             continue;
-        }
-
-        if (scancode == 0x1C) {         // enter
+        } else if (scancode == 0x1C) {         // enter
             command[cmd_len] = 0;       // null terminate
             handle_command(command);
             // clear input line
