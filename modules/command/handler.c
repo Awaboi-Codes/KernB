@@ -1,8 +1,11 @@
 #include "handler.h"
 #include "../vga/vga.h"
 
+int currentLine = 0;
+
 unsigned char *commands[] = {
-    "ECHO",
+    "echo",
+    "exit",
     0  // null terminator so we know when to stop
 };
 
@@ -11,12 +14,16 @@ void handle_command(char* command) {
     while (commands[i]) {
         if (streq(command, (char*)commands[i])) {
             // handle each command
-            if (streq(command, "ECHO")) {
-                print(0, 3, "ECHO!");
+            if (streq(command, "echo")) {
+                print(0, currentLine, "this is text this is text this is text this is text");
+            } else if (streq(command, "exit")) {
+                print(0, currentLine, "this is exit");
             }
+            currentLine++;
             return;
         }
         i++;
     }
-    print(0, 3, "Unknown command");
+    print(0, currentLine, "Unknown command");
+    currentLine++;
 }
