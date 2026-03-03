@@ -80,7 +80,7 @@ gdt_end:
 
 gdt_descriptor:
     dw gdt_end - gdt_start - 1
-    dq gdt_start
+    dd gdt_start          ; ← dd not dq (we're still 32-bit when lgdt runs)
 
 ; =========================
 ; Page tables (identity map first 2MB)

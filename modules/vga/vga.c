@@ -22,6 +22,31 @@ int streq(char* a, char* b) {
     return a[i] == b[i];
 }
 
+void split(char* str, char** out, int* count) {
+    *count = 0;
+    int i = 0;
+    int len = 0;
+    while (str[len]) len++;
+
+    while (i < len) {
+        while (i < len && str[i] == ' ') i++;
+        if (i >= len) break;
+
+        out[*count] = &str[i];
+        (*count)++;
+
+        while (i < len && str[i] != ' ') i++;
+        str[i] = '\0';
+        i++;
+    }
+}
+
+void clearLine(int y) {
+    for (int x = 0; x < width; x++) {
+        printchar(x, y, ' ');
+    }
+}
+
 void shiftTextUp() {
     unsigned short* vga = (unsigned short*)VGA_ADDRESS;
     for (int i = 0; i+1 < height; i++) {

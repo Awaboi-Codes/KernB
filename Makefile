@@ -2,7 +2,7 @@ CC      = gcc
 LD      = ld
 NASM    = nasm
 
-CFLAGS  = -m64 -ffreestanding -fno-builtin -nostdlib -nostartfiles -Wall -Wextra
+CFLAGS = -m64 -ffreestanding -fno-builtin -nostdlib -nostartfiles -fno-stack-protector -Wall -Wextra
 LDFLAGS = -m elf_x86_64 -T linker.ld
 
 # Automatically find all .c and .asm files in any subdirectory
@@ -13,6 +13,7 @@ ASM_SRCS := $(shell find . -name "*.asm" -not -path "./isodir/*")
 C_OBJS   := $(C_SRCS:.c=.o)
 ASM_OBJS := $(ASM_SRCS:.asm=.o)
 OBJS     := $(C_OBJS) $(ASM_OBJS)
+DISK = disk.img
 
 all: kernel.iso
 
@@ -36,9 +37,20 @@ kernel.iso: kernel.elf
 	grub-mkrescue -o kernel.iso isodir
 	@echo "Built kernel.iso"
 
+$(DISK):
+	dd if=/dev/zero of=disk.img bs=1M count=64
+	mke2fs -t ext4 -O ^64bit,^metadata_csum,^orphan_file disk.img
+
 # Run in 64-bit QEMU
-run: kernel.iso
-	qemu-system-x86_64 -cdrom kernel.iso
+run: kernel.iso $(DISK)
+	qemu-system-x86_64 \
+		-drive file=$(DISK),format=raw,id=disk0,if=none \
+		-device ide-hd,drive=disk0,bus=ide.0,unit=0 \
+		-drive file=kernel.iso,media=cdrom,id=cdrom0,if=none \
+		-device ide-cd,drive=cdrom0,bus=ide.1,unit=0 \
+		-boot d \
+		-d int,cpu_reset,guest_errors \
+		-no-reboot
 
 # Cleanup
 clean:

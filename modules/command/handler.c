@@ -2,10 +2,16 @@
 #include "handler.h"
 
 // FUNCTION HANDLING
+
 int currentLine = 0;
 
+char* args[16];
+int argc;
+
 void handle_command(char* command) {
-    fn_ptr_t fn = lookupCommand(command);  // ✅ fn_ptr_t, lookupCommand
+    split(command, args, &argc);
+    fn_ptr_t fn = lookupCommand(args[0]);
+    clearLine(currentLine);
     if (fn) {
         fn();
     } else {
@@ -17,7 +23,6 @@ void handle_command(char* command) {
         shiftTextUp();
     }
 }
-
 
 // FUNCTION REGISTERING
 

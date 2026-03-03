@@ -4,6 +4,8 @@
 // HANDLING
 #include <string.h>
 
+extern char* args[16];
+extern int argv;
 extern int currentLine;
 
 void handle_command(char* command);

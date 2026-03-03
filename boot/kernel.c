@@ -4,10 +4,11 @@ void kernel_main() {
     char command[256];
     int cmd_len = 0;
 
+    registry_init();
+    
     while (1) {
         print(0, currentLine, "[KernB Shell] > ");
         unsigned char scancode = read_key();
-        registry_init();
 
         if (scancode == 0x2A || scancode == 0x36) {
             shift = 1; 

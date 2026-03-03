@@ -1,5 +1,6 @@
 #include "commandDefs.h"
 
 void registry_init(void) {
-    addCommandToRegistry((fn_ptr_t)foo, "foo");
+    ext4_init();
+    addCommandToRegistry((fn_ptr_t)echo, "echo");
 }

@@ -7,6 +7,8 @@
 
 void printchar(int x, int y, char c);
 void print(int x, int y, char* str);
+void split(char* str, char** out, int* count);
+void clearLine(int y);
 int streq(char* a, char* b);
 void shiftTextUp();
 
