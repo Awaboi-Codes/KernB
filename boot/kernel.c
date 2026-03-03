@@ -7,6 +7,7 @@ void kernel_main() {
     while (1) {
         print(0, currentLine, "[KernB Shell] > ");
         unsigned char scancode = read_key();
+        registry_init();
 
         if (scancode == 0x2A || scancode == 0x36) {
             shift = 1; 
@@ -19,7 +20,7 @@ void kernel_main() {
         } else if (scancode == 0x0E) {         // backspace
             if (cmd_len > 0) {
                 cmd_len--;
-                putchar(cmd_len+16, currentLine, ' ');
+                printchar(cmd_len+16, currentLine, ' ');
             }
             continue;
         } else if (scancode == 0x1C) {         // enter
@@ -27,7 +28,7 @@ void kernel_main() {
             handle_command(command);
             // clear input line
             for (int i = 0; i < width; i++)
-                putchar(i+16, currentLine, ' ');
+                printchar(i+16, currentLine, ' ');
             cmd_len = 0;
             continue;
         }
@@ -35,7 +36,7 @@ void kernel_main() {
         char c = key_to_char(scancode);
         if (c && cmd_len < 255) {
             command[cmd_len] = c;
-            putchar(cmd_len+16, currentLine, c);
+            printchar(cmd_len+16, currentLine, c);
             cmd_len++;
         }
     }

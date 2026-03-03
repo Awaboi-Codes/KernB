@@ -4,7 +4,7 @@
 #include "vga/vga.h"
 #include "keyboard/keyboard.h"
 #include "command/handler.h"
-#include "command/text.h"
-// add new modules here
+#include "command/registry.h"
+#include "command/commandDefs.h"
 
 #endif

@@ -1,8 +1,9 @@
 CC      = gcc
 LD      = ld
 NASM    = nasm
-CFLAGS  = -m32 -ffreestanding -fno-builtin -nostdlib
-LDFLAGS = -m elf_i386 -T linker.ld
+
+CFLAGS  = -m64 -ffreestanding -fno-builtin -nostdlib -nostartfiles -Wall -Wextra
+LDFLAGS = -m elf_x86_64 -T linker.ld
 
 # Automatically find all .c and .asm files in any subdirectory
 C_SRCS   := $(shell find . -name "*.c" -not -path "./isodir/*")
@@ -15,15 +16,15 @@ OBJS     := $(C_OBJS) $(ASM_OBJS)
 
 all: kernel.iso
 
-# Compile any .c file
+# Compile C (64-bit)
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Assemble any .asm file
+# Assemble (64-bit ELF)
 %.o: %.asm
-	$(NASM) -f elf32 $< -o $@
+	$(NASM) -f elf64 $< -o $@
 
-# Link
+# Link (64-bit ELF)
 kernel.elf: $(OBJS)
 	$(LD) $(LDFLAGS) $(OBJS) -o $@
 
@@ -35,9 +36,9 @@ kernel.iso: kernel.elf
 	grub-mkrescue -o kernel.iso isodir
 	@echo "Built kernel.iso"
 
-# Run
+# Run in 64-bit QEMU
 run: kernel.iso
-	qemu-system-i386 -cdrom kernel.iso
+	qemu-system-x86_64 -cdrom kernel.iso
 
 # Cleanup
 clean:

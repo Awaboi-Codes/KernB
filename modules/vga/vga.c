@@ -1,6 +1,6 @@
 #include "vga.h"   // after the defines so it can use them
 
-void putchar(int x, int y, char c) {
+void printchar(int x, int y, char c) {
     unsigned short* vga = (unsigned short*)VGA_ADDRESS;
     vga[x + (y * width)] = (unsigned short)c | (0x07 << 8);
 }
@@ -8,7 +8,7 @@ void putchar(int x, int y, char c) {
 void print(int x, int y, char* str) {
     int i = 0;
     while (str[i]) {
-        putchar(x + i, y, str[i]);
+        printchar(x + i, y, str[i]);
         i++;
     }
 }

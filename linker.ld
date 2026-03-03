@@ -1,8 +1,11 @@
 ENTRY(start)
-SECTIONS {
+
+SECTIONS
+{
     . = 1M;
-    .multiboot : { *(.multiboot) }   /* ← was missing, header got dropped */
-    .text      : { *(.text)      }
-    .data      : { *(.data)      }
-    .bss       : { *(.bss)       }
+
+    .text : { *(.text*) }
+    .rodata : { *(.rodata*) }
+    .data : { *(.data*) }
+    .bss : { *(.bss*) }
 }
